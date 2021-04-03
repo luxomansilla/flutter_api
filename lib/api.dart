@@ -6,13 +6,13 @@ import 'package:http/http.dart';
 import 'responses.dart';
 
 class Api {
-  static Function(String, String) onError;
+  static Function(String, String?)? onError;
   static Uri baseUri = Uri();
 
   static Map<String, String> headers = Map<String, String>();
 
-  static String globalErrorPath;
-  static String globalDataPath;
+  static String? globalErrorPath;
+  static String? globalDataPath;
 
   static bool get _isInDebugMode {
     bool inDebugMode = false;
@@ -21,7 +21,7 @@ class Api {
   }
 
   static set(String endpoint,
-      {Map<String, String> args, List<MultipartFile> files}) async {
+      {Map<String, String>? args, List<MultipartFile>? files}) async {
     try {
       await _post(endpoint, body: args, files: files);
     } catch (e) {
@@ -30,11 +30,11 @@ class Api {
   }
 
   static Future<ApiResponse<T>> get<T>(String endpoint,
-      {Map<String, String> args,
-      List<MultipartFile> files,
-      String method,
-      String dataPath,
-      String errorPath}) async {
+      {Map<String, String>? args,
+      List<MultipartFile>? files,
+      String? method,
+      String? dataPath,
+      String? errorPath}) async {
     ApiResponse<T> data;
 
     try {
@@ -51,17 +51,17 @@ class Api {
     if (data.isSuccess) {
       return data;
     } else {
-      log(data.error);
+      log(data.error!);
       onError?.call(baseUri.toString() + endpoint, data.error);
-      return Future.error(data.error);
+      return Future.error(data.error!);
     }
   }
 
   static Future<ApiResponseList<T>> getList<T>(String endpoint,
-      {Map<String, String> args,
-      String method,
-      String dataPath,
-      String errorPath}) async {
+      {Map<String, String>? args,
+      String? method,
+      String? dataPath,
+      String? errorPath}) async {
     ApiResponseList<T> data;
 
     try {
@@ -78,17 +78,17 @@ class Api {
     if (data.isSuccess) {
       return data;
     } else {
-      log(data.error);
+      log(data.error!);
       onError?.call(baseUri.toString() + endpoint, data.error);
-      return Future.error(data.error);
+      return Future.error(data.error!);
     }
   }
 
   static Future<ApiResponseMap<K, V>> getMap<K, V>(String endpoint,
-      {Map<String, String> args,
-      String method,
-      String dataPath,
-      String errorPath}) async {
+      {Map<String, String>? args,
+      String? method,
+      String? dataPath,
+      String? errorPath}) async {
     ApiResponseMap<K, V> data;
 
     try {
@@ -105,14 +105,17 @@ class Api {
     if (data.isSuccess) {
       return data;
     } else {
-      log(data.error);
+      log(data.error!);
       onError?.call(baseUri.toString() + endpoint, data.error);
-      return Future.error(data.error);
+      return Future.error(data.error!);
     }
   }
 
   static Future<dynamic> _post(String endpoint,
-      {Map headers, Map body, List<MultipartFile> files, String method}) async {
+      {Map? headers,
+      Map? body,
+      List<MultipartFile>? files,
+      String? method}) async {
     endpoint = baseUri.toString() + endpoint;
     var r = MultipartRequest(
         (files?.isNotEmpty ?? false) ? "post" : method ?? "get",
@@ -128,11 +131,12 @@ class Api {
         print('Post: ' + endpoint + t);
       }
 
-      if (headers != null && headers.length > 0) r.headers.addAll(headers);
-      if (Api.headers?.isNotEmpty ?? false)
-        r.headers.addEntries(Api.headers.entries);
+      if (headers != null && headers.length > 0)
+        r.headers.addAll(headers as Map<String, String>);
+      if (Api.headers.isNotEmpty) r.headers.addEntries(Api.headers.entries);
 
-      if (body != null && body.length > 0) r.fields.addAll(body);
+      if (body != null && body.length > 0)
+        r.fields.addAll(body as Map<String, String>);
       if (files != null && files.length > 0) r.files.addAll(files);
 
       StreamedResponse response;
@@ -140,7 +144,7 @@ class Api {
         response = await r.send();
       } catch (e) {
         log('Error al intentar acceder a ' + endpoint + ': ' + e.toString(),
-            name: method);
+            name: method!);
         return {
           "isSuccess": false,
           "message":
@@ -150,7 +154,7 @@ class Api {
       String res = await response.stream.bytesToString();
 
       int statusCode = response.statusCode;
-      if (statusCode < 200 || statusCode >= 400 || res == null) {
+      if (statusCode < 200 || statusCode >= 400) {
         String e;
         switch (statusCode) {
           case 500:

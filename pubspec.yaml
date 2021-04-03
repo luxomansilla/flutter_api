@@ -1,15 +1,17 @@
 name: flutter_api
 description: A REST API Connector, you can connect your Flutter Project to any endpoint easily.
-version: 0.0.1
+version: 0.0.2
 repository: https://github.com/luxomansilla/flutter_api
 issue_tracker: https://github.com/luxomansilla/flutter_api/issues
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
   flutter: ">=1.20.0"
 
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_web_plugins:
     sdk: flutter
   http: ^0.13.1
 
@@ -25,38 +27,8 @@ flutter:
         pluginClass: FlutterApiPlugin
       windows:
         pluginClass: FlutterApiPlugin
-      
-      
-        
-    
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+      linux:
+        pluginClass: FlutterApiPlugin
+      web:
+        pluginClass: FlutterApiPlugin
+        fileName: flutter_api_web.dart

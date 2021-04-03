@@ -3,7 +3,7 @@ import 'api.dart';
 dynamic _jsonValue(String path, dynamic json) {
   dynamic value = json;
   for (String i in path.split("/")) {
-    while (value is Iterable) value = (value as Iterable).first;
+    while (value is Iterable) value = value.first;
     if (value != null) {
       value = value[i];
     } else {
@@ -14,22 +14,23 @@ dynamic _jsonValue(String path, dynamic json) {
 }
 
 class ApiResponse<T extends dynamic> {
-  String _error;
-  T _data;
-  int _dataCount;
+  String? _error;
+  T? _data;
+  int? _dataCount;
 
   bool get isSuccess => _error == null;
-  String get error => _error;
+  String? get error => _error;
   bool get hasData => _data != null;
-  T get data => _data;
-  int get count => _dataCount;
+  T? get data => _data;
+  int? get count => _dataCount;
 
-  ApiResponse(dynamic obj, {String dataPath, String errorPath}) {
+  ApiResponse(dynamic obj, {String? dataPath, String? errorPath}) {
     if ((errorPath ?? Api.globalErrorPath) != null)
-      this._error = _jsonValue(errorPath ?? Api.globalErrorPath, obj);
+      this._error = _jsonValue(errorPath ?? Api.globalErrorPath!, obj);
     if (isSuccess) {
+      print('data: ' + this._data.toString());
       if ((dataPath ?? Api.globalDataPath) != null) {
-        this._data = _jsonValue(dataPath ?? Api.globalDataPath, obj);
+        this._data = _jsonValue(dataPath ?? Api.globalDataPath!, obj);
       } else {
         this._data = obj;
       }
@@ -45,15 +46,15 @@ class ApiResponse<T extends dynamic> {
 }
 
 class ApiResponseList<T extends dynamic> {
-  String _error;
-  List<T> _items;
+  String? _error;
+  List<T>? _items;
 
   bool get isSuccess => _error == null;
-  String get error => _error;
-  bool get hasData => _items != null && _items.length > 0;
-  List<T> get items => _items;
+  String? get error => _error;
+  bool get hasData => _items != null && _items!.length > 0;
+  List<T>? get items => _items;
 
-  ApiResponseList(dynamic obj, {String dataPath, String errorPath}) {
+  ApiResponseList(dynamic obj, {String? dataPath, String? errorPath}) {
     var r = ApiResponse<dynamic>(obj, dataPath: dataPath, errorPath: errorPath);
     _error = r.error;
 
@@ -62,15 +63,15 @@ class ApiResponseList<T extends dynamic> {
 }
 
 class ApiResponseMap<K, V> {
-  String _error;
-  Map<K, V> _map;
+  String? _error;
+  Map<K, V>? _map;
 
   bool get isSuccess => _error == null;
-  String get error => _error;
-  bool get hasData => _map != null && _map.length > 0;
-  Map<K, V> get map => _map;
+  String? get error => _error;
+  bool get hasData => _map != null && _map!.length > 0;
+  Map<K, V>? get map => _map;
 
-  ApiResponseMap(dynamic obj, {String dataPath, String errorPath}) {
+  ApiResponseMap(dynamic obj, {String? dataPath, String? errorPath}) {
     var r = ApiResponse<dynamic>(obj, dataPath: dataPath, errorPath: errorPath);
     _error = r.error;
 

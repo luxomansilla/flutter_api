@@ -4,20 +4,20 @@ import 'responses.dart';
 import 'api.dart';
 
 class ApiBuilder<T> extends StatelessWidget {
-  final Widget Function(ApiResponse<T> data) builder;
-  final Widget loading;
+  final Widget Function(ApiResponse<T>? data) builder;
+  final Widget? loading;
   final String url;
-  final Map<String, String> args;
-  final String method;
-  final String dataPath;
-  final String errorPath;
-  final bool showLoading;
+  final Map<String, String>? args;
+  final String? method;
+  final String? dataPath;
+  final String? errorPath;
+  final bool? showLoading;
   ApiBuilder(
-      {@required this.url,
+      {required this.url,
       this.args,
       this.method,
       this.dataPath,
-      @required this.builder,
+      required this.builder,
       this.loading,
       this.showLoading,
       this.errorPath});
@@ -30,30 +30,30 @@ class ApiBuilder<T> extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.done) {
             return builder(snapshot.data);
           } else if (snapshot.connectionState == ConnectionState.waiting &&
-              showLoading) {
+              showLoading!) {
             return loading ?? Center(child: CircularProgressIndicator());
           } else if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.data.hasData) {}
+              snapshot.data!.hasData) {}
           return Container();
         });
   }
 }
 
 class ApiListBuilder<T> extends StatelessWidget {
-  final Widget Function(ApiResponseList<T> data) builder;
-  final Widget loading;
+  final Widget Function(ApiResponseList<T>? data) builder;
+  final Widget? loading;
   final String url;
-  final Map<String, String> args;
-  final String method;
-  final String dataPath;
-  final String errorPath;
+  final Map<String, String>? args;
+  final String? method;
+  final String? dataPath;
+  final String? errorPath;
   final bool showLoading;
   ApiListBuilder(
-      {@required this.url,
+      {required this.url,
       this.args,
       this.method,
       this.dataPath,
-      @required this.builder,
+      required this.builder,
       this.loading,
       this.showLoading: true,
       this.errorPath});
@@ -70,27 +70,27 @@ class ApiListBuilder<T> extends StatelessWidget {
               showLoading) {
             return loading ?? Center(child: CircularProgressIndicator());
           } else if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.data.hasData) {}
+              snapshot.data!.hasData) {}
           return Container();
         });
   }
 }
 
 class ApiMapBuilder<K, V> extends StatelessWidget {
-  final Widget Function(ApiResponseMap<K, V> data) builder;
-  final Widget loading;
+  final Widget Function(ApiResponseMap<K, V>? data) builder;
+  final Widget? loading;
   final String url;
-  final Map<String, String> args;
-  final String method;
-  final String dataPath;
-  final String errorPath;
+  final Map<String, String>? args;
+  final String? method;
+  final String? dataPath;
+  final String? errorPath;
   final bool showLoading;
   ApiMapBuilder(
-      {@required this.url,
+      {required this.url,
       this.args,
       this.method,
       this.dataPath,
-      @required this.builder,
+      required this.builder,
       this.loading,
       this.showLoading: true,
       this.errorPath});
@@ -107,7 +107,7 @@ class ApiMapBuilder<K, V> extends StatelessWidget {
               showLoading) {
             return loading ?? Center(child: CircularProgressIndicator());
           } else if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.data.hasData) {}
+              snapshot.data!.hasData) {}
           return Container();
         });
   }
