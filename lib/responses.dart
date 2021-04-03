@@ -28,7 +28,6 @@ class ApiResponse<T extends dynamic> {
     if ((errorPath ?? Api.globalErrorPath) != null)
       this._error = _jsonValue(errorPath ?? Api.globalErrorPath!, obj);
     if (isSuccess) {
-      print('data: ' + this._data.toString());
       if ((dataPath ?? Api.globalDataPath) != null) {
         this._data = _jsonValue(dataPath ?? Api.globalDataPath!, obj);
       } else {
