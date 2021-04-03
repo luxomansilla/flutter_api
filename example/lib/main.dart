@@ -18,7 +18,11 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     Api.baseUri = Uri.parse('https://query1.finance.yahoo.com/v8/finance/');
-
+    Api.globalDataPath='';
+    Api.globalErrorPath='';
+    Api.headers= null;
+    Api.onError=null;
+Api.set<String>(endpoint)
     Api.get<num>(
             'chart/${_currencys[0]}=X?includePrePost=false&interval=1d&corsDomain=finance.yahoo.com&.tsrc=finance',
             dataPath: 'chart/result/meta/regularMarketPrice')
