@@ -6,7 +6,7 @@ class FlutterApiPlugin {
     final MethodChannel channel = MethodChannel(
         'ar.com.luxomansilla.flutter_api',
         const StandardMethodCodec(),
-        registrar.messenger);
+        ServicesBinding.instance!.defaultBinaryMessenger);
     final FlutterApiPlugin instance = FlutterApiPlugin();
     channel.setMethodCallHandler(instance.handleMethodCall);
   }
