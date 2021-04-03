@@ -2,6 +2,10 @@
 
 * minor changes.
 
+## 0.0.2+1
+
+* minor changes.
+
 ## 0.0.2
 
 * Null-Safety support.

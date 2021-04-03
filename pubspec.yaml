@@ -1,6 +1,6 @@
 name: flutter_api
 description: A REST API Connector, you can connect your Flutter Project to any endpoint easily.
-version: 0.0.2+1
+version: 0.0.2+2
 repository: https://github.com/luxomansilla/flutter_api
 issue_tracker: https://github.com/luxomansilla/flutter_api/issues
 
