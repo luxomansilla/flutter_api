@@ -2,8 +2,8 @@
 .atom/
 .idea/
 .vscode/
-**/example/Windows
-**/example/Web
+**/example/
+!**/example/lib/main.dart
 
 
 # Miscellaneous
