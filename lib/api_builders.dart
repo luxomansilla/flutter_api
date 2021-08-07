@@ -3,19 +3,19 @@ import 'package:flutter/material.dart';
 import 'responses.dart';
 import 'api.dart';
 
-class ApiBuilder<T> extends StatelessWidget {
-  final Widget Function(ApiResponse<T>? data) builder;
+class ApiBuilder<T extends dynamic> extends StatelessWidget {
+  final Widget Function(ApiResponse<T> data) builder;
   final Widget? loading;
   final String url;
   final Map<String, String>? args;
-  final String? method;
+  final String method;
   final String? dataPath;
   final String? errorPath;
   final bool? showLoading;
   ApiBuilder(
       {required this.url,
       this.args,
-      this.method,
+      this.method: 'get',
       this.dataPath,
       required this.builder,
       this.loading,
@@ -28,7 +28,7 @@ class ApiBuilder<T> extends StatelessWidget {
         future: Api.get<T>(url, args: args, method: method, dataPath: dataPath),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return builder(snapshot.data);
+            return builder(snapshot.data!);
           } else if (snapshot.connectionState == ConnectionState.waiting &&
               showLoading!) {
             return loading ?? Center(child: CircularProgressIndicator());
@@ -39,19 +39,19 @@ class ApiBuilder<T> extends StatelessWidget {
   }
 }
 
-class ApiListBuilder<T> extends StatelessWidget {
-  final Widget Function(ApiResponseList<T>? data) builder;
+class ApiListBuilder<T extends dynamic> extends StatelessWidget {
+  final Widget Function(ApiResponseList<T> data) builder;
   final Widget? loading;
   final String url;
   final Map<String, String>? args;
-  final String? method;
+  final String method;
   final String? dataPath;
   final String? errorPath;
   final bool showLoading;
   ApiListBuilder(
       {required this.url,
       this.args,
-      this.method,
+      this.method: 'get',
       this.dataPath,
       required this.builder,
       this.loading,
@@ -65,7 +65,7 @@ class ApiListBuilder<T> extends StatelessWidget {
             Api.getList<T>(url, args: args, method: method, dataPath: dataPath),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return builder(snapshot.data);
+            return builder(snapshot.data!);
           } else if (snapshot.connectionState == ConnectionState.waiting &&
               showLoading) {
             return loading ?? Center(child: CircularProgressIndicator());
@@ -77,18 +77,18 @@ class ApiListBuilder<T> extends StatelessWidget {
 }
 
 class ApiMapBuilder<K, V> extends StatelessWidget {
-  final Widget Function(ApiResponseMap<K, V>? data) builder;
+  final Widget Function(ApiResponseMap<K, V> data) builder;
   final Widget? loading;
   final String url;
   final Map<String, String>? args;
-  final String? method;
+  final String method;
   final String? dataPath;
   final String? errorPath;
   final bool showLoading;
   ApiMapBuilder(
       {required this.url,
       this.args,
-      this.method,
+      this.method: 'get',
       this.dataPath,
       required this.builder,
       this.loading,
@@ -102,7 +102,7 @@ class ApiMapBuilder<K, V> extends StatelessWidget {
             args: args, method: method, dataPath: dataPath),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return builder(snapshot.data);
+            return builder(snapshot.data!);
           } else if (snapshot.connectionState == ConnectionState.waiting &&
               showLoading) {
             return loading ?? Center(child: CircularProgressIndicator());

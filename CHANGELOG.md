@@ -1,3 +1,9 @@
+## 0.0.3-dev.1
+
+* Null-Safety changes.
+* changes in http requests methods.
+* add globalQueryParams.
+
 ## 0.0.2+2
 
 * readme documentation.

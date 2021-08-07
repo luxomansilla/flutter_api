@@ -19,6 +19,8 @@ The `baseUri` is **required** and it's used globally
 * `Api.globalErrorPath` sets the json path for determine if an error exists in the response.
 * `Api.headers` can add any header required by the api.
 * `Api.onError` it's called when has a error on the response.
+* `Api.printRequests` print all the requests.
+* `Api.printResponses` print all the responses.
 
 
 ## Functions usage
@@ -41,7 +43,7 @@ Example:
 
 ## Builders usage
 
-* `ApiBuilder<T>` returns a value._
+* `ApiBuilder<T>` returns a value.
 * `ApiListBuilder<T>` returns a `List` value.
 * `ApiMapBuilder<K,V>` returns a `Map` value.
 

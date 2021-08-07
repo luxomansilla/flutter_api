@@ -16,22 +16,22 @@ dynamic _jsonValue(String path, dynamic json) {
 class ApiResponse<T extends dynamic> {
   String? _error;
   T? _data;
-  int? _dataCount;
+  late int _dataCount;
 
   bool get isSuccess => _error == null;
   String? get error => _error;
   bool get hasData => _data != null;
-  T? get data => _data;
-  int? get count => _dataCount;
+  T get data => _data!;
+  int get count => _dataCount;
 
   ApiResponse(dynamic obj, {String? dataPath, String? errorPath}) {
     if ((errorPath ?? Api.globalErrorPath) != null)
-      this._error = _jsonValue(errorPath ?? Api.globalErrorPath!, obj);
+      _error = _jsonValue(errorPath ?? Api.globalErrorPath!, obj);
     if (isSuccess) {
       if ((dataPath ?? Api.globalDataPath) != null) {
-        this._data = _jsonValue(dataPath ?? Api.globalDataPath!, obj);
+        _data = _jsonValue(dataPath ?? Api.globalDataPath!, obj);
       } else {
-        this._data = obj;
+        _data = obj;
       }
       if (_data is Iterable) {
         _dataCount = (_data as Iterable).length;
@@ -42,6 +42,20 @@ class ApiResponse<T extends dynamic> {
       }
     }
   }
+
+  bool get isMap => _data is Map;
+  bool get isList => _data is Iterable;
+
+  List<T> asList<T>() {
+    if (isSuccess && isList) return List.from(_data as Iterable);
+    return [];
+  }
+
+  Map<K, V> asMap<K, V>() {
+    if (isSuccess && isMap)
+      return Map.castFrom<String, dynamic, K, V>(_data as Map<String, dynamic>);
+    return {};
+  }
 }
 
 class ApiResponseList<T extends dynamic> {
@@ -51,13 +65,18 @@ class ApiResponseList<T extends dynamic> {
   bool get isSuccess => _error == null;
   String? get error => _error;
   bool get hasData => _items != null && _items!.length > 0;
-  List<T>? get items => _items;
+  List<T> get items => _items ?? <T>[];
 
   ApiResponseList(dynamic obj, {String? dataPath, String? errorPath}) {
-    var r = ApiResponse<dynamic>(obj, dataPath: dataPath, errorPath: errorPath);
-    _error = r.error;
+    if (dataPath == null || dataPath.isEmpty) {
+      if (isSuccess) this._items = List.from(obj);
+    } else {
+      var r =
+          ApiResponse<dynamic>(obj, dataPath: dataPath, errorPath: errorPath);
+      _error = r.error;
 
-    if (isSuccess) this._items = List.from(r.data);
+      if (isSuccess) this._items = List.from(r.data);
+    }
   }
 }
 
@@ -68,12 +87,17 @@ class ApiResponseMap<K, V> {
   bool get isSuccess => _error == null;
   String? get error => _error;
   bool get hasData => _map != null && _map!.length > 0;
-  Map<K, V>? get map => _map;
+  Map<K, V> get map => _map ?? <K, V>{};
 
   ApiResponseMap(dynamic obj, {String? dataPath, String? errorPath}) {
-    var r = ApiResponse<dynamic>(obj, dataPath: dataPath, errorPath: errorPath);
-    _error = r.error;
+    if (dataPath == null || dataPath.isEmpty) {
+      if (isSuccess) this._map = Map.castFrom(obj);
+    } else {
+      var r =
+          ApiResponse<dynamic>(obj, dataPath: dataPath, errorPath: errorPath);
+      _error = r.error;
 
-    if (isSuccess) this._map = Map.castFrom(r.data);
+      if (isSuccess) this._map = Map.castFrom(r.data);
+    }
   }
 }
