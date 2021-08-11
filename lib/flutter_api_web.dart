@@ -10,7 +10,7 @@ class FlutterApiPlugin {
     // final FlutterApiPlugin instance = FlutterApiPlugin();
     // channel.setMethodCallHandler(instance.handleMethodCall);
     final MethodChannel channel = MethodChannel(
-        'plugins.flutter.io/url_launcher',
+        'ar.com.luxomansilla.flutter_api',
         const StandardMethodCodec(),
         registrar.messenger);
     final FlutterApiPlugin instance = FlutterApiPlugin();
