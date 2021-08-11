@@ -3,10 +3,16 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 class FlutterApiPlugin {
   static void registerWith(Registrar registrar) {
+    // final MethodChannel channel = MethodChannel(
+    //     'ar.com.luxomansilla.flutter_api',
+    //     const StandardMethodCodec(),
+    //     ServicesBinding.instance!.defaultBinaryMessenger);
+    // final FlutterApiPlugin instance = FlutterApiPlugin();
+    // channel.setMethodCallHandler(instance.handleMethodCall);
     final MethodChannel channel = MethodChannel(
-        'ar.com.luxomansilla.flutter_api',
+        'plugins.flutter.io/url_launcher',
         const StandardMethodCodec(),
-        ServicesBinding.instance!.defaultBinaryMessenger);
+        registrar.messenger);
     final FlutterApiPlugin instance = FlutterApiPlugin();
     channel.setMethodCallHandler(instance.handleMethodCall);
   }
