@@ -183,7 +183,7 @@ class Api {
     try {
       // if (headers != null && headers.length > 0)
       //   r.headers.addAll(headers as Map<String, String>);
-      // if (Api.headers.isNotEmpty) r.headers.addEntries(Api.headers.entries);
+      if (Api.headers.isNotEmpty) headers.addEntries(Api.headers.entries);
       // log('generando conexion: $method');
 
       http.Response r;
