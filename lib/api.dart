@@ -155,7 +155,9 @@ class Api {
       Map<String, String>? body,
       List<http.MultipartFile>? files,
       String? method}) async {
-    endpoint = baseUri.toString() + endpoint;
+    if (!endpoint.toLowerCase().contains("://"))
+      endpoint = baseUri.toString() + endpoint;
+
     method = method?.toUpperCase() ?? 'GET';
 
     if (body == null) body = Map<String, String>();
