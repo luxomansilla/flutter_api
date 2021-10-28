@@ -23,11 +23,13 @@ class Api {
     Map<String, String>? args,
     List<http.MultipartFile>? files,
     String method: 'put',
+    Map<String, String>? headers,
   }) async {
     ApiResponse<T> data;
 
     try {
-      data = await _post(endpoint, body: args, files: files, method: method);
+      data = await _post(endpoint,
+          body: args, files: files, method: method, headers: headers);
     } catch (e) {
       log(e.toString(), error: e);
       var obj = {"error": e.toString()};
@@ -48,11 +50,13 @@ class Api {
     Map<String, String>? args,
     List<http.MultipartFile>? files,
     String method: 'post',
+    Map<String, String>? headers,
   }) async {
     ApiResponse<T> data;
 
     try {
-      data = await _post(endpoint, body: args, files: files, method: method);
+      data = await _post(endpoint,
+          body: args, files: files, method: method, headers: headers);
     } catch (e) {
       log(e.toString(), error: e);
       var obj = {"error": e.toString()};
@@ -68,17 +72,21 @@ class Api {
     }
   }
 
-  static Future<ApiResponse<T>> get<T>(String endpoint,
-      {Map<String, String>? args,
-      List<http.MultipartFile>? files,
-      String method: 'get',
-      String? dataPath,
-      String? errorPath}) async {
+  static Future<ApiResponse<T>> get<T>(
+    String endpoint, {
+    Map<String, String>? args,
+    List<http.MultipartFile>? files,
+    String method: 'get',
+    String? dataPath,
+    String? errorPath,
+    Map<String, String>? headers,
+  }) async {
     ApiResponse<T> data;
 
     try {
       data = ApiResponse<T>(
-          await _post(endpoint, body: args, files: files, method: method),
+          await _post(endpoint,
+              body: args, files: files, method: method, headers: headers),
           dataPath: dataPath,
           errorPath: errorPath);
     } catch (e) {
@@ -96,16 +104,19 @@ class Api {
     }
   }
 
-  static Future<ApiResponseList<T>> getList<T>(String endpoint,
-      {Map<String, String>? args,
-      String method: 'get',
-      String? dataPath,
-      String? errorPath}) async {
+  static Future<ApiResponseList<T>> getList<T>(
+    String endpoint, {
+    Map<String, String>? args,
+    String method: 'get',
+    String? dataPath,
+    String? errorPath,
+    Map<String, String>? headers,
+  }) async {
     ApiResponseList<T> data;
 
     try {
       data = ApiResponseList<T>(
-          await _post(endpoint, body: args, method: method),
+          await _post(endpoint, body: args, method: method, headers: headers),
           dataPath: dataPath,
           errorPath: errorPath);
     } catch (e) {
@@ -123,16 +134,19 @@ class Api {
     }
   }
 
-  static Future<ApiResponseMap<K, V>> getMap<K, V>(String endpoint,
-      {Map<String, String>? args,
-      String method: 'get',
-      String? dataPath,
-      String? errorPath}) async {
+  static Future<ApiResponseMap<K, V>> getMap<K, V>(
+    String endpoint, {
+    Map<String, String>? args,
+    String method: 'get',
+    String? dataPath,
+    String? errorPath,
+    Map<String, String>? headers,
+  }) async {
     ApiResponseMap<K, V> data;
 
     try {
       data = ApiResponseMap<K, V>(
-          await _post(endpoint, body: args, method: method),
+          await _post(endpoint, body: args, method: method, headers: headers),
           dataPath: dataPath,
           errorPath: errorPath);
     } catch (e) {
@@ -150,11 +164,13 @@ class Api {
     }
   }
 
-  static Future<dynamic> _post(String endpoint,
-      {Map<String, String>? headers,
-      Map<String, String>? body,
-      List<http.MultipartFile>? files,
-      String? method}) async {
+  static Future<dynamic> _post(
+    String endpoint, {
+    Map<String, String>? headers,
+    Map<String, String>? body,
+    List<http.MultipartFile>? files,
+    String? method,
+  }) async {
     if (!endpoint.contains("://")) endpoint = baseUri.toString() + endpoint;
 
     method = method?.toUpperCase() ?? 'GET';
