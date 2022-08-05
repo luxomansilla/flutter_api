@@ -4,7 +4,9 @@ dynamic _jsonValue(String path, dynamic json) {
   dynamic value = json;
   for (String i in path.split("/")) {
     while (value is Iterable) value = value.first;
-    if (value != null) {
+    if (value == null) return null;
+
+    if (value is Map) {
       value = value[i];
     } else {
       return null;
@@ -25,13 +27,13 @@ class ApiResponse<T extends dynamic> {
   int get count => _dataCount;
 
   ApiResponse(dynamic obj, {String? dataPath, String? errorPath}) {
-    if ((errorPath ?? Api.globalErrorPath) != null)
-      _error = _jsonValue(errorPath ?? Api.globalErrorPath!, obj);
+    _error = _jsonValue(errorPath ?? Api.globalErrorPath ?? 'error', obj);
+
     if (isSuccess) {
       if ((dataPath ?? Api.globalDataPath) != null) {
-        _data = _jsonValue(dataPath ?? Api.globalDataPath!, obj);
+        _data = _jsonValue(dataPath ?? Api.globalDataPath ?? '', obj);
       } else {
-        _data = obj;
+        _data = obj as T;
       }
       if (_data is Iterable) {
         _dataCount = (_data as Iterable).length;
@@ -68,8 +70,10 @@ class ApiResponseList<T extends dynamic> {
   List<T> get items => _items ?? <T>[];
 
   ApiResponseList(dynamic obj, {String? dataPath, String? errorPath}) {
-    if (dataPath == null || dataPath.isEmpty) {
-      if (isSuccess) this._items = List.from(obj);
+    _error = _jsonValue(errorPath ?? Api.globalErrorPath ?? 'error', obj);
+
+    if (isSuccess && (dataPath == null || dataPath.isEmpty)) {
+      this._items = List.from(obj);
     } else {
       var r =
           ApiResponse<dynamic>(obj, dataPath: dataPath, errorPath: errorPath);

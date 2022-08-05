@@ -31,18 +31,16 @@ class Api {
       data = await _post(endpoint,
           body: args, files: files, method: method, headers: headers);
     } catch (e) {
-      log(e.toString(), error: e);
       var obj = {"error": e.toString()};
       data = ApiResponse<T>(obj, errorPath: "error");
     }
 
-    if (data.isSuccess) {
-      return data;
-    } else {
-      log(data.error!);
+    if (!data.isSuccess) {
+      log(baseUri.toString() + endpoint, error: data.error);
       onError?.call(baseUri.toString() + endpoint, data.error);
-      return Future.error(data.error!);
     }
+
+    return data;
   }
 
   static Future<ApiResponse<T>> set<T>(
@@ -58,18 +56,16 @@ class Api {
       data = await _post(endpoint,
           body: args, files: files, method: method, headers: headers);
     } catch (e) {
-      log(e.toString(), error: e);
       var obj = {"error": e.toString()};
       data = ApiResponse<T>(obj, errorPath: "error");
     }
 
-    if (data.isSuccess) {
-      return data;
-    } else {
-      log(data.error!);
+    if (!data.isSuccess) {
+      log(baseUri.toString() + endpoint, error: data.error);
       onError?.call(baseUri.toString() + endpoint, data.error);
-      return Future.error(data.error!);
     }
+
+    return data;
   }
 
   static Future<ApiResponse<T>> get<T>(
@@ -83,25 +79,26 @@ class Api {
   }) async {
     ApiResponse<T> data;
 
-    try {
-      data = ApiResponse<T>(
-          await _post(endpoint,
-              body: args, files: files, method: method, headers: headers),
-          dataPath: dataPath,
-          errorPath: errorPath);
-    } catch (e) {
-      log(e.toString(), error: e);
-      var obj = {"error": e.toString()};
-      data = ApiResponse<T>(obj, errorPath: "error");
+    // try {
+    var rta = await _post(endpoint,
+        body: args,
+        files: files,
+        method: method,
+        headers: headers,
+        errorPath: errorPath);
+    data = ApiResponse<T>(rta,
+        dataPath: dataPath ?? globalDataPath, errorPath: errorPath);
+    // } catch (e) {
+    //   var obj = {"error": e.toString()};
+    //   data = ApiResponse<T>(obj, errorPath: "error");
+    // }
+
+    if (!data.isSuccess) {
+      log(baseUri.toString() + endpoint, error: data.error);
+      onError?.call(baseUri.toString() + endpoint, data.error);
     }
 
-    if (data.isSuccess) {
-      return data;
-    } else {
-      log(data.error!);
-      onError?.call(baseUri.toString() + endpoint, data.error);
-      return Future.error(data.error!);
-    }
+    return data;
   }
 
   static Future<ApiResponseList<T>> getList<T>(
@@ -115,23 +112,21 @@ class Api {
     ApiResponseList<T> data;
 
     try {
-      data = ApiResponseList<T>(
-          await _post(endpoint, body: args, method: method, headers: headers),
-          dataPath: dataPath,
-          errorPath: errorPath);
+      var rta = await _post(endpoint,
+          body: args, method: method, headers: headers, errorPath: errorPath);
+      data = ApiResponseList<T>(rta,
+          dataPath: dataPath ?? globalDataPath, errorPath: errorPath);
     } catch (e) {
-      log(e.toString(), error: e);
       var obj = {"error": e.toString()};
       data = ApiResponseList<T>(obj, errorPath: "error");
     }
 
-    if (data.isSuccess) {
-      return data;
-    } else {
-      log(data.error!);
+    if (!data.isSuccess) {
+      log(baseUri.toString() + endpoint, error: data.error);
       onError?.call(baseUri.toString() + endpoint, data.error);
-      return Future.error(data.error!);
     }
+
+    return data;
   }
 
   static Future<ApiResponseMap<K, V>> getMap<K, V>(
@@ -146,22 +141,24 @@ class Api {
 
     try {
       data = ApiResponseMap<K, V>(
-          await _post(endpoint, body: args, method: method, headers: headers),
-          dataPath: dataPath,
+          await _post(endpoint,
+              body: args,
+              method: method,
+              headers: headers,
+              errorPath: errorPath),
+          dataPath: dataPath ?? globalDataPath,
           errorPath: errorPath);
     } catch (e) {
-      log(e.toString(), error: e);
       var obj = {"error": e.toString()};
       data = ApiResponseMap<K, V>(obj, errorPath: "error");
     }
 
-    if (data.isSuccess) {
-      return data;
-    } else {
-      log(data.error!);
+    if (!data.isSuccess) {
+      log(baseUri.toString() + endpoint, error: data.error);
       onError?.call(baseUri.toString() + endpoint, data.error);
-      return Future.error(data.error!);
     }
+
+    return data;
   }
 
   static Future<dynamic> _post(
@@ -170,8 +167,10 @@ class Api {
     Map<String, String>? body,
     List<http.MultipartFile>? files,
     String? method,
+    String? errorPath,
   }) async {
     if (!endpoint.contains("://")) endpoint = baseUri.toString() + endpoint;
+    if (errorPath == null) errorPath = globalErrorPath ?? 'error';
 
     method = method?.toUpperCase() ?? 'GET';
 
@@ -239,7 +238,7 @@ class Api {
             name: method);
         return {
           "isSuccess": false,
-          globalErrorPath ?? 'message':
+          errorPath:
               'No se puede conectar al servidor, corroborá tu conexión a Internet.'
         };
       }
@@ -251,10 +250,10 @@ class Api {
       if (statusCode < 200 || statusCode >= 400) {
         String e = '';
 
-        if (globalErrorPath != null) {
+        if (errorPath != null) {
           try {
             var rta = json.decode(res);
-            var err = rta[globalErrorPath];
+            var err = rta[errorPath];
             if (err != null) e = err;
           } catch (er) {}
         }
@@ -279,12 +278,7 @@ class Api {
           print(res.toString());
         }
 
-        // log('Error ' + statusCode.toString() + ' al acceder a ' + endpoint,
-        //     name: "post");
-
-        // if (_isInDebugMode || printResponses) log(res.toString());
-
-        return {"isSuccess": false, globalErrorPath ?? 'message': e};
+        return {(errorPath ?? 'error'): e};
       } else {
         var rta = json.decode(res);
         if (printResponses) {
@@ -296,8 +290,7 @@ class Api {
     } catch (e) {
       if (printResponses)
         print('Response Error: ' + endpoint + ' => ' + e.toString());
-      log(e.toString(), error: e);
-      return Future.error(e);
+      return {(errorPath ?? 'error'): e.toString()};
     }
   }
 }
