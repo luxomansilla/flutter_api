@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
           child: ListView.builder(
             itemCount: _currencys.length,
             itemBuilder: (BuildContext context, int index) {
-              return ApiBuilder(
+              return ApiBuilder<dynamic>(
                 url:
                     'chart/${_currencys[index]}=X?includePrePost=false&interval=1d&corsDomain=finance.yahoo.com&.tsrc=finance',
                 dataPath: 'chart/result/meta',

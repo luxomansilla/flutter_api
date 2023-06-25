@@ -22,7 +22,7 @@ class Api {
     String endpoint, {
     Map<String, String>? args,
     List<http.MultipartFile>? files,
-    String method: 'put',
+    String method = 'put',
     Map<String, String>? headers,
   }) async {
     ApiResponse<T> data;
@@ -47,7 +47,7 @@ class Api {
     String endpoint, {
     Map<String, String>? args,
     List<http.MultipartFile>? files,
-    String method: 'post',
+    String method = 'post',
     Map<String, String>? headers,
   }) async {
     ApiResponse<T> data;
@@ -72,7 +72,7 @@ class Api {
     String endpoint, {
     Map<String, String>? args,
     List<http.MultipartFile>? files,
-    String method: 'get',
+    String method = 'get',
     String? dataPath,
     String? errorPath,
     Map<String, String>? headers,
@@ -104,7 +104,7 @@ class Api {
   static Future<ApiResponseList<T>> getList<T>(
     String endpoint, {
     Map<String, String>? args,
-    String method: 'get',
+    String method = 'get',
     String? dataPath,
     String? errorPath,
     Map<String, String>? headers,
@@ -132,7 +132,7 @@ class Api {
   static Future<ApiResponseMap<K, V>> getMap<K, V>(
     String endpoint, {
     Map<String, String>? args,
-    String method: 'get',
+    String method = 'get',
     String? dataPath,
     String? errorPath,
     Map<String, String>? headers,
@@ -250,13 +250,11 @@ class Api {
       if (statusCode < 200 || statusCode >= 400) {
         String e = '';
 
-        if (errorPath != null) {
-          try {
-            var rta = json.decode(res);
-            var err = rta[errorPath];
-            if (err != null) e = err;
-          } catch (er) {}
-        }
+        try {
+          var rta = json.decode(res);
+          var err = rta[errorPath];
+          if (err != null) e = err;
+        } catch (er) {}
 
         if (e.isEmpty)
           switch (statusCode) {
@@ -278,7 +276,7 @@ class Api {
           print(res.toString());
         }
 
-        return {(errorPath ?? 'error'): e};
+        return {errorPath: e};
       } else {
         var rta = json.decode(res);
         if (printResponses) {
@@ -290,7 +288,7 @@ class Api {
     } catch (e) {
       if (printResponses)
         print('Response Error: ' + endpoint + ' => ' + e.toString());
-      return {(errorPath ?? 'error'): e.toString()};
+      return {errorPath: e.toString()};
     }
   }
 }

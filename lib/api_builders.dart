@@ -15,7 +15,7 @@ class ApiBuilder<T extends dynamic> extends StatelessWidget {
   ApiBuilder(
       {required this.url,
       this.args,
-      this.method: 'get',
+      this.method = 'get',
       this.dataPath,
       required this.builder,
       this.loading,
@@ -51,11 +51,11 @@ class ApiListBuilder<T extends dynamic> extends StatelessWidget {
   ApiListBuilder(
       {required this.url,
       this.args,
-      this.method: 'get',
+      this.method = 'get',
       this.dataPath,
       required this.builder,
       this.loading,
-      this.showLoading: true,
+      this.showLoading = true,
       this.errorPath});
 
   @override
@@ -88,11 +88,11 @@ class ApiMapBuilder<K, V> extends StatelessWidget {
   ApiMapBuilder(
       {required this.url,
       this.args,
-      this.method: 'get',
+      this.method = 'get',
       this.dataPath,
       required this.builder,
       this.loading,
-      this.showLoading: true,
+      this.showLoading = true,
       this.errorPath});
 
   @override
