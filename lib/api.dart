@@ -29,7 +29,7 @@ class Api {
 
     try {
       data = await _post(endpoint,
-          body: args, files: files, method: method, headers: headers);
+          args: args, files: files, method: method, headers: headers);
     } catch (e) {
       var obj = {"error": e.toString()};
       data = ApiResponse<T>(obj, errorPath: "error");
@@ -54,7 +54,7 @@ class Api {
 
     try {
       data = await _post(endpoint,
-          body: args, files: files, method: method, headers: headers);
+          args: args, files: files, method: method, headers: headers);
     } catch (e) {
       var obj = {"error": e.toString()};
       data = ApiResponse<T>(obj, errorPath: "error");
@@ -81,7 +81,7 @@ class Api {
 
     // try {
     var rta = await _post(endpoint,
-        body: args,
+        args: args,
         files: files,
         method: method,
         headers: headers,
@@ -113,7 +113,7 @@ class Api {
 
     try {
       var rta = await _post(endpoint,
-          body: args, method: method, headers: headers, errorPath: errorPath);
+          args: args, method: method, headers: headers, errorPath: errorPath);
       data = ApiResponseList<T>(rta,
           dataPath: dataPath ?? globalDataPath, errorPath: errorPath);
     } catch (e) {
@@ -142,7 +142,7 @@ class Api {
     try {
       data = ApiResponseMap<K, V>(
           await _post(endpoint,
-              body: args,
+              args: args,
               method: method,
               headers: headers,
               errorPath: errorPath),
@@ -164,7 +164,7 @@ class Api {
   static Future<dynamic> _post(
     String endpoint, {
     Map<String, String>? headers,
-    Map<String, String>? body,
+    Map<String, String>? args,
     List<http.MultipartFile>? files,
     String? method,
     String? errorPath,
@@ -174,12 +174,11 @@ class Api {
 
     method = method?.toUpperCase() ?? 'GET';
 
-    if (body == null) body = Map<String, String>();
-    if (globalParams.isNotEmpty) body.addAll(globalParams);
+    if (args == null) args = Map<String, String>();
+    if (globalParams.isNotEmpty) args.addAll(globalParams);
 
     String queryEndpoint = '';
-    if (method != 'POST' && body.isNotEmpty)
-      queryEndpoint = Uri(queryParameters: body).query;
+    if (args.isNotEmpty) queryEndpoint = Uri(queryParameters: args).query;
     if (headers == null) headers = {};
     // var r = MultipartRequest(
     //     (files?.isNotEmpty ?? false) ? "post" : method ?? "get",
@@ -202,22 +201,33 @@ class Api {
       if (Api.headers.isNotEmpty) headers.addEntries(Api.headers.entries);
       // log('generando conexion: $method');
 
-      http.Response r;
+      http.Response? r;
+
+      var url = Uri.parse(endpoint);
+      if (args.isNotEmpty) {
+        String queryString = '?' + Uri(queryParameters: args).query;
+        url = Uri.parse(endpoint + queryString);
+      }
+
       switch (method) {
         case 'POST':
-          var j = json.encode(body);
-          headers.addEntries(
-              [MapEntry<String, String>('content-type', 'application/json')]);
-          r = await http.post(Uri.parse(endpoint), headers: headers, body: j);
+          // {
+          var request = http.MultipartRequest(method, url);
+          request.headers.addAll(headers);
+
+          if (files?.isNotEmpty ?? false) request.files.addAll(files!);
+          await request.send().then((value) async {
+            r = await http.Response.fromStream(value);
+          });
+
+          r = await http.post(url, headers: headers);
+
           break;
+        case 'DELETE':
+          r = await http.delete(url, headers: headers);
 
+          break;
         default:
-          var url = Uri.parse(endpoint);
-          if (body.isNotEmpty) {
-            String queryString = '?' + Uri(queryParameters: body).query;
-            url = Uri.parse(endpoint + queryString);
-          }
-
           // var url = Uri.dataFromString(endpoint, parameters: body);
           // var url = Uri( , queryParameters: body);
           // var url = Uri.parse(endpoint);
@@ -243,10 +253,10 @@ class Api {
         };
       }
       // String res = await response.stream.bytesToString();
-      String res = r.body;
+      String res = r?.body ?? '';
 
       //int statusCode = response.statusCode;
-      int statusCode = r.statusCode;
+      int statusCode = r?.statusCode ?? 0;
       if (statusCode < 200 || statusCode >= 400) {
         String e = '';
 
@@ -278,6 +288,10 @@ class Api {
 
         return {errorPath: e};
       } else {
+        if (res.isEmpty) {
+          return ApiResponse("");
+        }
+
         var rta = json.decode(res);
         if (printResponses) {
           print('Response ' + statusCode.toString() + ': ' + endpoint);
